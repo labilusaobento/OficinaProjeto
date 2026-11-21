@@ -1,0 +1,18 @@
+{
+  "name": "Biblioteca Sonora · 5.º Ano",
+  "short_name": "Histórias 5.º",
+  "description": "Aplicação de histórias em áudio para alunos do 5.º ano, com modo Ler e Ouvir e gestão simples para o professor.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FAF7F2",
+  "theme_color": "#1E4D40",
+  "lang": "pt-PT",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

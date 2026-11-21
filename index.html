@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Biblioteca Sonora · 5.º Ano</title>
+  <meta name="description" content="Histórias em áudio para alunos do 5.º ano, com modo Ler e Ouvir, velocidade ajustável e gestão simples para o professor." />
+  <meta name="theme-color" content="#1E4D40" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Top Header -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-logo" aria-hidden="true">
+          <svg viewBox="0 0 40 40" width="36" height="36">
+            <rect width="40" height="40" rx="12" fill="#1E4D40"/>
+            <path d="M10 22a10 10 0 0 1 20 0" fill="none" stroke="#F6C85F" stroke-width="2.8" stroke-linecap="round"/>
+            <rect x="7.5" y="20" width="5" height="9.5" rx="2.5" fill="#FAF7F2"/>
+            <rect x="27.5" y="20" width="5" height="9.5" rx="2.5" fill="#FAF7F2"/>
+            <path d="M17 18.5l8 4.5-8 4.5z" fill="#F6C85F"/>
+          </svg>
+        </div>
+        <div>
+          <h1 id="classTitle">Biblioteca Sonora · 5.º Ano</h1>
+          <p id="classSubtitle" class="brand-subtitle">Escolhe uma história, põe os auscultadores e deixa a imaginação viajar.</p>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <div class="progress-pill" id="progressPill" title="Histórias que já ouviste">
+          <span class="progress-icon" aria-hidden="true">⭐</span>
+          <span id="progressText">0 de 0 ouvidas</span>
+        </div>
+        <button type="button" class="btn btn-ghost" id="btnDyslexiaGlobal" aria-pressed="false" title="Ativar modo de leitura fácil (mais espaçamento e contraste suave)">
+          <span aria-hidden="true">Aa</span>
+          <span class="hide-sm">Leitura Fácil</span>
+        </button>
+        <button type="button" class="btn btn-outline" id="btnTeacherMode" title="Área reservada ao professor para adicionar histórias">
+          <span aria-hidden="true">🔒</span>
+          <span>Professor</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Filters & Search -->
+    <section class="controls-bar" aria-label="Filtrar histórias">
+      <div class="category-pills" id="categoryPills" role="tablist">
+        <!-- Populated by JS -->
+      </div>
+      <div class="search-wrap">
+        <span class="search-icon" aria-hidden="true">🔍</span>
+        <input
+          type="search"
+          id="searchInput"
+          placeholder="Procurar história ou tema..."
+          aria-label="Procurar história ou tema"
+          autocomplete="off"
+        />
+      </div>
+    </section>
+
+    <!-- Story Cards Grid -->
+    <main class="main-content">
+      <div id="storiesGrid" class="stories-grid" aria-live="polite">
+        <!-- Story cards rendered by JS -->
+      </div>
+
+      <div id="emptyState" class="empty-state hidden">
+        <div class="empty-emoji" aria-hidden="true">🎧</div>
+        <h2>Ainda não há histórias nesta categoria</h2>
+        <p>Tenta escolher outro tema ou pede ao professor para adicionar uma nova história.</p>
+        <button type="button" class="btn btn-primary" id="btnResetFilters">Ver todas as histórias</button>
+      </div>
+    </main>
+
+    <!-- Subtle Footer -->
+    <footer class="app-footer">
+      <p>Criado para a turma do 5.º ano · Sem anúncios · Feito para ouvir com calma 🎧</p>
+    </footer>
+  </div>
+
+  <!-- Story Player Modal / Drawer -->
+  <div id="playerModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="playerTitle">
+    <div class="modal-sheet player-sheet">
+      <div class="modal-header">
+        <div class="player-badges">
+          <span id="playerCategory" class="tag-pill">Lendas</span>
+          <span id="playerAudioBadge" class="tag-pill tag-soft">Voz Automática PT</span>
+        </div>
+        <div class="modal-header-actions">
+          <button type="button" class="icon-btn" id="btnFavoritePlayer" title="Guardar nas favoritas" aria-label="Guardar nas favoritas">☆</button>
+          <button type="button" class="icon-btn" id="btnClosePlayer" title="Fechar leitor" aria-label="Fechar leitor">✕</button>
+        </div>
+      </div>
+
+      <div class="player-body">
+        <!-- Cover + Meta -->
+        <div class="player-hero">
+          <div id="playerCover" class="player-cover theme-indigo">
+            <span id="playerIcon" class="player-cover-icon" aria-hidden="true">✨</span>
+            <div class="equalizer" id="playerEqualizer" aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="player-meta">
+            <h2 id="playerTitle">Título da História</h2>
+            <p id="playerNarrator" class="player-narrator">Narrado por...</p>
+            <p id="playerDescription" class="player-description"></p>
+          </div>
+        </div>
+
+        <!-- Audio Controls -->
+        <div class="audio-controls-card">
+          <div class="scrubber-row">
+            <span id="timeCurrent" class="time-label">0:00</span>
+            <input type="range" id="progressSlider" min="0" max="100" value="0" step="0.5" aria-label="Progresso da história" />
+            <span id="timeTotal" class="time-label">0:00</span>
+          </div>
+
+          <div class="transport-row">
+            <button type="button" class="btn-circle btn-secondary-circle" id="btnSkipBack" title="Recuar 10 segundos (ou frase anterior)" aria-label="Recuar">
+              ↺ <small>10s</small>
+            </button>
+
+            <button type="button" class="btn-circle btn-play-main" id="btnPlayPause" aria-label="Ouvir história">
+              <span id="playPauseIcon">▶</span>
+            </button>
+
+            <button type="button" class="btn-circle btn-secondary-circle" id="btnSkipForward" title="Avançar 10 segundos (ou frase seguinte)" aria-label="Avançar">
+              <small>10s</small> ↻
+            </button>
+          </div>
+
+          <div class="extra-controls-row">
+            <!-- Voice gender selector -->
+            <div class="control-group" id="voiceGenderGroup" aria-label="Escolher voz da narração">
+              <span class="control-label">Voz PT</span>
+              <div class="segmented" id="voiceGenderSelector">
+                <button type="button" data-gender="female" class="active">👩 Feminina</button>
+                <button type="button" data-gender="male">👨 Masculina</button>
+              </div>
+            </div>
+
+            <!-- Speed -->
+            <div class="control-group" aria-label="Velocidade da narração">
+              <span class="control-label">Velocidade</span>
+              <div class="segmented" id="speedSelector">
+                <button type="button" data-speed="0.75">0.75x</button>
+                <button type="button" data-speed="1" class="active">1x</button>
+                <button type="button" data-speed="1.25">1.25x</button>
+                <button type="button" data-speed="1.5">1.5x</button>
+              </div>
+            </div>
+
+            <!-- Ambient soundscape -->
+            <div class="control-group" aria-label="Som ambiente opcional">
+              <span class="control-label">Ambiente</span>
+              <select id="ambientSelect" class="mini-select" aria-label="Escolher som ambiente">
+                <option value="off">Silêncio</option>
+                <option value="rain">🌧️ Chuva suave</option>
+                <option value="forest">🌿 Brisa calma</option>
+              </select>
+            </div>
+
+            <!-- Mark listened -->
+            <button type="button" class="btn btn-soft-green" id="btnToggleListened">
+              ✓ Marcar como ouvida
+            </button>
+          </div>
+
+          <p id="playerNotice" class="player-notice hidden"></p>
+        </div>
+
+        <!-- Read-Along (Modo Ler e Ouvir) -->
+        <div class="read-along-box" id="readAlongBox">
+          <div class="read-along-header">
+            <button type="button" class="btn btn-outline btn-sm" id="btnToggleText" aria-expanded="true">
+              📖 Esconder texto
+            </button>
+            <div class="text-tools" id="textTools">
+              <button type="button" class="btn btn-ghost btn-sm" id="btnFontSmaller" title="Diminuir letra">A-</button>
+              <button type="button" class="btn btn-ghost btn-sm" id="btnFontLarger" title="Aumentar letra">A+</button>
+              <button type="button" class="btn btn-ghost btn-sm" id="btnDyslexiaPlayer" aria-pressed="false">Leitura Fácil</button>
+            </div>
+          </div>
+          <div id="storyTextContainer" class="story-text-container">
+            <!-- Synchronized sentences rendered here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Teacher PIN Modal -->
+  <div id="pinModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="pinModalTitle">
+    <div class="modal-sheet pin-sheet">
+      <div class="modal-header">
+        <h2 id="pinModalTitle">Área do Professor</h2>
+        <button type="button" class="icon-btn" id="btnClosePin" aria-label="Fechar">✕</button>
+      </div>
+      <form id="pinForm" class="pin-form">
+        <p class="muted">Introduz o código PIN para adicionar ou editar histórias da turma.</p>
+        <input type="password" id="pinInput" inputmode="numeric" maxlength="8" placeholder="PIN (predefinido: 5000)" autocomplete="off" required />
+        <p id="pinError" class="error-text hidden">Código incorreto. Tenta novamente.</p>
+        <div class="form-actions">
+          <button type="button" class="btn btn-ghost" id="btnCancelPin">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Entrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Teacher Studio Modal -->
+  <div id="teacherModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="teacherModalTitle">
+    <div class="modal-sheet teacher-sheet">
+      <div class="modal-header">
+        <div>
+          <h2 id="teacherModalTitle">Modo Professor · Gestão de Histórias</h2>
+          <p class="muted small">Adiciona histórias aos poucos e exporta o ficheiro quando quiseres atualizar o link do Teams.</p>
+        </div>
+        <button type="button" class="icon-btn" id="btnCloseTeacher" aria-label="Fechar">✕</button>
+      </div>
+
+      <div class="teacher-tabs" role="tablist">
+        <button type="button" class="teacher-tab active" data-tab="add">➕ Nova História</button>
+        <button type="button" class="teacher-tab" data-tab="manage">📚 Gerir Biblioteca</button>
+        <button type="button" class="teacher-tab" data-tab="publish">🚀 Publicar & Definições</button>
+      </div>
+
+      <!-- Tab 1: Add / Edit Story -->
+      <div id="teacherTabAdd" class="teacher-panel">
+        <form id="storyForm" class="story-form">
+          <input type="hidden" id="editingStoryId" value="" />
+
+          <div class="form-row-2">
+            <label class="field">
+              <span>Título da história *</span>
+              <input type="text" id="inputTitle" placeholder="Ex.: O Mistério do Farol" required />
+            </label>
+            <label class="field">
+              <span>Narrador / Autor</span>
+              <input type="text" id="inputNarrator" placeholder="Ex.: Prof. João ou Grupo da Inês" />
+            </label>
+          </div>
+
+          <div class="form-row-3">
+            <label class="field">
+              <span>Categoria *</span>
+              <select id="inputCategory">
+                <option value="Inspiração">Inspiração</option>
+                <option value="Aventura">Aventura</option>
+                <option value="Lendas">Lendas</option>
+                <option value="Mistério">Mistério</option>
+                <option value="Calma">Calma</option>
+                <option value="Poesia">Poesia</option>
+                <option value="Vozes da Turma">Vozes da Turma</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Duração estimada</span>
+              <input type="text" id="inputDuration" placeholder="Ex.: 4 min" />
+            </label>
+            <label class="field">
+              <span>Ícone da capa</span>
+              <select id="inputIcon">
+                <option value="💛">💛 Coração</option>
+                <option value="🦅">🦅 Falcão</option>
+                <option value="🎧">🎧 Auscultadores</option>
+                <option value="✨">✨ Estrela</option>
+                <option value="🔎">🔎 Mistério</option>
+                <option value="🌊">🌊 Oceano</option>
+                <option value="🌿">🌿 Natureza</option>
+                <option value="🏰">🏰 Castelo</option>
+                <option value="🚀">🚀 Espaço</option>
+                <option value="🦊">🦊 Animais</option>
+                <option value="🎙️">🎙️ Turma</option>
+                <option value="📖">📖 Livro</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="field">
+            <span>Cor da capa</span>
+            <div class="theme-picker" id="themePicker">
+              <button type="button" class="theme-swatch theme-emerald active" data-theme="emerald" aria-label="Verde Esmeralda"></button>
+              <button type="button" class="theme-swatch theme-indigo" data-theme="indigo" aria-label="Azul Índigo"></button>
+              <button type="button" class="theme-swatch theme-ocean" data-theme="ocean" aria-label="Azul Oceano"></button>
+              <button type="button" class="theme-swatch theme-plum" data-theme="plum" aria-label="Ameixa"></button>
+              <button type="button" class="theme-swatch theme-terracotta" data-theme="terracotta" aria-label="Terracota"></button>
+              <button type="button" class="theme-swatch theme-amber" data-theme="amber" aria-label="Âmbar"></button>
+            </div>
+          </div>
+
+          <label class="field">
+            <span>Resumo curto (aparece no cartão)</span>
+            <input type="text" id="inputDescription" placeholder="Uma frase curta para despertar curiosidade nos alunos..." />
+          </label>
+
+          <!-- Audio Source Mode -->
+          <div class="field">
+            <span>Como os alunos vão ouvir esta história?</span>
+            <div class="audio-source-tabs" id="audioSourceTabs">
+              <button type="button" class="source-btn active" data-source="record">🎙️ Gravar com microfone</button>
+              <button type="button" class="source-btn" data-source="upload">📁 Carregar ficheiro MP3/WAV</button>
+              <button type="button" class="source-btn" data-source="tts">🗣️ Leitura automática do texto</button>
+            </div>
+
+            <!-- Record panel -->
+            <div id="sourceRecordPanel" class="source-panel">
+              <div class="recorder-box">
+                <button type="button" class="btn btn-danger" id="btnRecordToggle">● Começar a gravar</button>
+                <span id="recordTimer" class="record-timer">00:00</span>
+                <span id="recordStatus" class="muted small">Pronto para gravar a tua voz</span>
+              </div>
+              <audio id="recordPreview" controls class="audio-preview hidden"></audio>
+            </div>
+
+            <!-- Upload panel -->
+            <div id="sourceUploadPanel" class="source-panel hidden">
+              <input type="file" id="inputAudioFile" accept="audio/*" />
+              <p id="uploadInfo" class="muted small">Aceita MP3, WAV, M4A ou OGG. Dica: gravações até ~4–5 MB ficam fáceis de exportar num único ficheiro.</p>
+              <audio id="uploadPreview" controls class="audio-preview hidden"></audio>
+            </div>
+
+            <!-- TTS panel -->
+            <div id="sourceTtsPanel" class="source-panel hidden">
+              <p class="muted small">A aplicação lê automaticamente o texto abaixo em português com destaque frase a frase (*Ler e Ouvir*), sem precisar de gravar ficheiro de áudio.</p>
+            </div>
+          </div>
+
+          <label class="field">
+            <span>Texto da história (opcional para áudio gravado · ativa o modo *Ler e Ouvir*)</span>
+            <textarea id="inputText" rows="5" placeholder="Cola ou escreve aqui o texto da história. Separa parágrafos com uma linha em branco..."></textarea>
+          </label>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-ghost" id="btnResetStoryForm">Limpar formulário</button>
+            <button type="submit" class="btn btn-primary" id="btnSaveStory">Guardar história na biblioteca</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Tab 2: Manage Stories -->
+      <div id="teacherTabManage" class="teacher-panel hidden">
+        <div id="manageStoriesList" class="manage-list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Tab 3: Publish & Settings -->
+      <div id="teacherTabPublish" class="teacher-panel hidden">
+        <div class="publish-card">
+          <h3>🚀 Atualizar o link para os alunos (Teams / Netlify / GitHub)</h3>
+          <p class="muted">As histórias que crias aqui ficam logo guardadas neste computador para testares. Quando quiseres que toda a turma as oiça online:</p>
+          <ol class="steps-list">
+            <li>Clica em <strong>Descarregar <code>stories.json</code> atualizado</strong> abaixo.</li>
+            <li>Substitui o ficheiro <code>stories.json</code> na pasta da aplicação.</li>
+            <li>Arrasta a pasta atualizada para o teu site no <strong>Netlify</strong> (ou envia para o GitHub Pages) — o link no <strong>Microsoft Teams</strong> mantém-se exatamente igual!</li>
+          </ol>
+          <div class="publish-actions">
+            <button type="button" class="btn btn-primary" id="btnExportCatalog">⬇️ Descarregar stories.json atualizado</button>
+            <label class="btn btn-outline file-btn">
+              ⬆️ Importar backup (.json)
+              <input type="file" id="inputImportCatalog" accept="application/json" hidden />
+            </label>
+          </div>
+          <p id="exportStatus" class="muted small"></p>
+        </div>
+
+        <div class="publish-card">
+          <h3>⚙️ Personalizar Turma</h3>
+          <form id="settingsForm" class="story-form">
+            <div class="form-row-2">
+              <label class="field">
+                <span>Nome da Biblioteca / Turma</span>
+                <input type="text" id="settingClassTitle" placeholder="Biblioteca Sonora · 5.º A" />
+              </label>
+              <label class="field">
+                <span>PIN do Professor</span>
+                <input type="text" id="settingPin" inputmode="numeric" maxlength="8" placeholder="5000" />
+              </label>
+            </div>
+            <label class="field">
+              <span>Mensagem de boas-vindas</span>
+              <input type="text" id="settingClassSubtitle" placeholder="Escolhe uma história, põe os auscultadores..." />
+            </label>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">Guardar definições</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notification -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
