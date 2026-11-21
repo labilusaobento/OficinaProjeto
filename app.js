@@ -97,7 +97,7 @@
     ]
   };
 
-  const CATEGORIES = ['Todas', 'Inspiração', 'Aventura', 'Lendas', 'Mistério', 'Calma', 'Poesia', 'Vozes da Turma', '⭐ Favoritas'];
+  const CATEGORIES = ['Todas', 'Inspiração', 'História', 'Aventura', 'Lendas', 'Mistério', 'Calma', 'Poesia', 'Vozes da Turma', '⭐ Favoritas'];
   const DEFAULT_PIN = '5000';
 
   // ---- IndexedDB wrapper for local teacher stories & audio blobs ----
@@ -155,10 +155,11 @@
 
   // ---- Application State ----
   const state = {
-    classTitle: FALLBACK_CATALOG.classTitle,
-    classSubtitle: FALLBACK_CATALOG.classSubtitle,
+    classTitle: 'Biblioteca Sonora',
+    classSubtitle: 'Escolhe o teu ano, põe os auscultadores e deixa a imaginação viajar.',
     pin: DEFAULT_PIN,
     stories: [],
+    activeGrade: null, // null = home menu, '5' = 5.º Ano, '6' = 6.º Ano
     selectedCategory: 'Todas',
     searchQuery: '',
     listenedIds: new Set(),
@@ -270,13 +271,23 @@
   const dom = {
     classTitle: document.getElementById('classTitle'),
     classSubtitle: document.getElementById('classSubtitle'),
+    gradeSwitcher: document.getElementById('gradeSwitcher'),
+    btnBackToMenu: document.getElementById('btnBackToMenu'),
+    topGradePills: document.getElementById('topGradePills'),
+    progressPill: document.getElementById('progressPill'),
     progressText: document.getElementById('progressText'),
     btnDyslexiaGlobal: document.getElementById('btnDyslexiaGlobal'),
     btnTeacherMode: document.getElementById('btnTeacherMode'),
+    homeMenu: document.getElementById('homeMenu'),
+    countGrade5: document.getElementById('countGrade5'),
+    countGrade6: document.getElementById('countGrade6'),
+    libraryView: document.getElementById('libraryView'),
     categoryPills: document.getElementById('categoryPills'),
     searchInput: document.getElementById('searchInput'),
     storiesGrid: document.getElementById('storiesGrid'),
     emptyState: document.getElementById('emptyState'),
+    emptyStateTitle: document.getElementById('emptyStateTitle'),
+    emptyStateDesc: document.getElementById('emptyStateDesc'),
     btnResetFilters: document.getElementById('btnResetFilters'),
 
     // Player Modal
@@ -331,6 +342,7 @@
     editingStoryId: document.getElementById('editingStoryId'),
     inputTitle: document.getElementById('inputTitle'),
     inputNarrator: document.getElementById('inputNarrator'),
+    inputGrade: document.getElementById('inputGrade'),
     inputCategory: document.getElementById('inputCategory'),
     inputDuration: document.getElementById('inputDuration'),
     inputIcon: document.getElementById('inputIcon'),
@@ -528,9 +540,65 @@
       state.deletedIds = new Set();
     }
 
+    applyHashGrade();
+    renderView();
+  }
+
+  function getStoryGrade(story) {
+    return String(story && story.grade ? story.grade : '5');
+  }
+
+  function getGradeStories(grade) {
+    const g = String(grade || '5');
+    return state.stories.filter(s => getStoryGrade(s) === g);
+  }
+
+  function applyHashGrade() {
+    const h = (window.location.hash || '').toLowerCase();
+    if (h === '#5ano' || h === '#5') state.activeGrade = '5';
+    else if (h === '#6ano' || h === '#6') state.activeGrade = '6';
+    else state.activeGrade = null;
+  }
+
+  function selectGrade(grade, updateHash = true) {
+    state.activeGrade = grade === '5' || grade === '6' ? grade : null;
+    state.selectedCategory = 'Todas';
+    state.searchQuery = '';
+    if (dom.searchInput) dom.searchInput.value = '';
+    if (updateHash) {
+      const targetHash = state.activeGrade ? `#${state.activeGrade}ano` : '';
+      if (window.location.hash !== targetHash) {
+        if (targetHash) window.location.hash = targetHash;
+        else history.replaceState(null, '', window.location.pathname + window.location.search);
+      }
+    }
+    renderView();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderView() {
+    const isMenu = !state.activeGrade;
+    dom.homeMenu.classList.toggle('hidden', !isMenu);
+    dom.libraryView.classList.toggle('hidden', isMenu);
+    dom.gradeSwitcher.classList.toggle('hidden', isMenu);
+    dom.progressPill.classList.toggle('hidden', isMenu);
+
+    const count5 = getGradeStories('5').length;
+    const count6 = getGradeStories('6').length;
+    dom.countGrade5.textContent = count5 === 1 ? '1 história' : `${count5} histórias`;
+    dom.countGrade6.textContent = count6 === 0 ? 'Em breve novas histórias' : count6 === 1 ? '1 história' : `${count6} histórias`;
+
+    if (dom.topGradePills) {
+      dom.topGradePills.querySelectorAll('button[data-grade]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.grade === state.activeGrade);
+      });
+    }
+
     renderHeader();
-    renderCategories();
-    renderStories();
+    if (!isMenu) {
+      renderCategories();
+      renderStories();
+    }
   }
 
   async function persistTeacherCatalog() {
@@ -546,13 +614,22 @@
 
   // ---- Rendering ----
   function renderHeader() {
-    dom.classTitle.textContent = state.classTitle;
-    dom.classSubtitle.textContent = state.classSubtitle;
-    document.title = state.classTitle;
+    const baseTitle = (state.classTitle || 'Biblioteca Sonora').replace(/\s*·\s*5\.º\s*Ano/i, '').trim() || 'Biblioteca Sonora';
+    if (state.activeGrade) {
+      const title = `${baseTitle} · ${state.activeGrade}.º Ano`;
+      dom.classTitle.textContent = title;
+      dom.classSubtitle.textContent = 'Escolhe uma história, põe os auscultadores e deixa a imaginação viajar.';
+      document.title = title;
 
-    const total = state.stories.length;
-    const listenedCount = state.stories.filter(s => state.listenedIds.has(s.id)).length;
-    dom.progressText.textContent = `${listenedCount} de ${total} ouvidas`;
+      const gradeStories = getGradeStories(state.activeGrade);
+      const total = gradeStories.length;
+      const listenedCount = gradeStories.filter(s => state.listenedIds.has(s.id)).length;
+      dom.progressText.textContent = `${listenedCount} de ${total} ouvidas`;
+    } else {
+      dom.classTitle.textContent = baseTitle;
+      dom.classSubtitle.textContent = state.classSubtitle || 'Escolhe o teu ano, põe os auscultadores e deixa a imaginação viajar.';
+      document.title = `${baseTitle} · 5.º e 6.º Ano`;
+    }
   }
 
   function renderCategories() {
@@ -564,7 +641,8 @@
 
   function getFilteredStories() {
     const q = state.searchQuery.trim().toLowerCase();
-    return state.stories.filter(story => {
+    const gradeStories = state.activeGrade ? getGradeStories(state.activeGrade) : state.stories;
+    return gradeStories.filter(story => {
       if (state.selectedCategory === '⭐ Favoritas') {
         if (!state.favoriteIds.has(story.id)) return false;
       } else if (state.selectedCategory !== 'Todas') {
@@ -579,11 +657,21 @@
 
   function renderStories() {
     const list = getFilteredStories();
+    const gradeTotal = state.activeGrade ? getGradeStories(state.activeGrade).length : state.stories.length;
     renderHeader();
 
     if (list.length === 0) {
       dom.storiesGrid.innerHTML = '';
       dom.emptyState.classList.remove('hidden');
+      if (gradeTotal === 0 && state.activeGrade) {
+        dom.emptyStateTitle.textContent = `Biblioteca Sonora · ${state.activeGrade}.º Ano pronta!`;
+        dom.emptyStateDesc.textContent = `Ainda não foram adicionadas histórias ao ${state.activeGrade}.º ano. Em breve o professor vai publicar as primeiras histórias aqui.`;
+        dom.btnResetFilters.classList.add('hidden');
+      } else {
+        dom.emptyStateTitle.textContent = 'Ainda não há histórias nesta categoria';
+        dom.emptyStateDesc.textContent = 'Tenta escolher outro tema ou pede ao professor para adicionar uma nova história.';
+        dom.btnResetFilters.classList.remove('hidden');
+      }
       return;
     }
 
@@ -1146,6 +1234,7 @@
 
     const storyObj = {
       id: existing ? existing.id : `historia-${Date.now()}`,
+      grade: dom.inputGrade ? dom.inputGrade.value || '5' : (existing ? getStoryGrade(existing) : state.activeGrade || '5'),
       title,
       narrator: dom.inputNarrator.value.trim() || 'Professor',
       category: dom.inputCategory.value || 'Aventura',
@@ -1165,12 +1254,12 @@
       showToast(`História "${title}" atualizada!`);
     } else {
       state.stories.unshift(storyObj);
-      showToast(`História "${title}" adicionada à biblioteca!`);
+      showToast(`História "${title}" adicionada ao ${storyObj.grade}.º Ano!`);
     }
 
     await persistTeacherCatalog();
     resetStoryForm();
-    renderStories();
+    renderView();
     renderManageList();
   }
 
@@ -1183,13 +1272,14 @@
     dom.manageStoriesList.innerHTML = state.stories
       .map(s => {
         const hasAudio = storyHasRecordedAudio(s);
+        const g = getStoryGrade(s);
         return `
           <div class="manage-item">
             <div class="manage-item-info">
               <div class="manage-thumb theme-${escapeHtml(s.coverTheme || 'emerald')}">${escapeHtml(s.icon || '🎧')}</div>
               <div>
                 <h4>${escapeHtml(s.title)}</h4>
-                <p>${escapeHtml(s.category)} · ${escapeHtml(s.duration || '2 min')} · ${hasAudio ? 'Áudio gravado' : 'Voz automática PT'}</p>
+                <p><strong>${escapeHtml(g)}.º Ano</strong> · ${escapeHtml(s.category)} · ${escapeHtml(s.duration || '2 min')} · ${hasAudio ? 'Áudio gravado' : 'Voz automática PT'}</p>
               </div>
             </div>
             <div class="manage-actions">
@@ -1210,6 +1300,7 @@
     dom.editingStoryId.value = s.id;
     dom.inputTitle.value = s.title || '';
     dom.inputNarrator.value = s.narrator || '';
+    if (dom.inputGrade) dom.inputGrade.value = getStoryGrade(s);
     dom.inputCategory.value = s.category || 'Aventura';
     dom.inputDuration.value = s.duration || '';
     dom.inputIcon.value = s.icon || '🎧';
@@ -1544,6 +1635,24 @@
       await persistTeacherCatalog();
       renderHeader();
       showToast('Definições da turma guardadas!');
+    });
+
+    // Home menu & Grade navigation
+    dom.homeMenu.addEventListener('click', e => {
+      const card = e.target.closest('[data-enter-grade]');
+      if (card) selectGrade(card.dataset.enterGrade);
+    });
+
+    dom.btnBackToMenu.addEventListener('click', () => selectGrade(null));
+
+    dom.topGradePills.addEventListener('click', e => {
+      const btn = e.target.closest('button[data-grade]');
+      if (btn) selectGrade(btn.dataset.grade);
+    });
+
+    window.addEventListener('hashchange', () => {
+      applyHashGrade();
+      renderView();
     });
 
     // Keyboard Escape

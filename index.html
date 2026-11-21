@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Biblioteca Sonora · 5.º Ano</title>
-  <meta name="description" content="Histórias em áudio para alunos do 5.º ano, com modo Ler e Ouvir, velocidade ajustável e gestão simples para o professor." />
+  <title>Biblioteca Sonora · 5.º e 6.º Ano</title>
+  <meta name="description" content="Histórias em áudio para alunos do 5.º e 6.º ano, com modo Ler e Ouvir, vozes naturais em Português de Portugal e gestão simples para o professor." />
   <meta name="theme-color" content="#1E4D40" />
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" type="image/svg+xml" href="./icon.svg" />
@@ -28,13 +28,20 @@
           </svg>
         </div>
         <div>
-          <h1 id="classTitle">Biblioteca Sonora · 5.º Ano</h1>
-          <p id="classSubtitle" class="brand-subtitle">Escolhe uma história, põe os auscultadores e deixa a imaginação viajar.</p>
+          <h1 id="classTitle">Biblioteca Sonora</h1>
+          <p id="classSubtitle" class="brand-subtitle">Escolhe o teu ano, põe os auscultadores e deixa a imaginação viajar.</p>
         </div>
       </div>
 
       <div class="topbar-actions">
-        <div class="progress-pill" id="progressPill" title="Histórias que já ouviste">
+        <div class="grade-switcher hidden" id="gradeSwitcher" role="navigation" aria-label="Mudar de biblioteca">
+          <button type="button" class="btn btn-ghost btn-sm" id="btnBackToMenu" title="Voltar ao menu inicial">← Início</button>
+          <div class="segmented" id="topGradePills">
+            <button type="button" data-grade="5">5.º Ano</button>
+            <button type="button" data-grade="6">6.º Ano</button>
+          </div>
+        </div>
+        <div class="progress-pill hidden" id="progressPill" title="Histórias que já ouviste">
           <span class="progress-icon" aria-hidden="true">⭐</span>
           <span id="progressText">0 de 0 ouvidas</span>
         </div>
@@ -49,40 +56,84 @@
       </div>
     </header>
 
-    <!-- Filters & Search -->
-    <section class="controls-bar" aria-label="Filtrar histórias">
-      <div class="category-pills" id="categoryPills" role="tablist">
-        <!-- Populated by JS -->
+    <!-- Welcome / Grade Selection Menu -->
+    <section id="homeMenu" class="home-menu" aria-label="Escolher ano escolar">
+      <div class="home-hero">
+        <span class="home-kicker">2.º Ciclo · Histórias em Áudio</span>
+        <h2>Escolhe a tua Biblioteca Sonora</h2>
+        <p>Seleciona o teu ano para ouvires histórias com vozes naturais de Portugal, acompanhamento de texto e zero distrações.</p>
       </div>
-      <div class="search-wrap">
-        <span class="search-icon" aria-hidden="true">🔍</span>
-        <input
-          type="search"
-          id="searchInput"
-          placeholder="Procurar história ou tema..."
-          aria-label="Procurar história ou tema"
-          autocomplete="off"
-        />
+
+      <div class="grade-cards-grid">
+        <button type="button" class="grade-card grade-card-5" data-enter-grade="5">
+          <div class="grade-card-banner theme-emerald">
+            <span class="grade-chip">2.º Ciclo</span>
+            <span class="grade-big-icon" aria-hidden="true">🎧</span>
+          </div>
+          <div class="grade-card-body">
+            <h3>Biblioteca Sonora · 5.º Ano</h3>
+            <p>Fábulas, lendas, mistério, aventura e histórias que inspiram para os alunos do 5.º ano.</p>
+            <div class="grade-card-footer">
+              <span class="grade-count-pill" id="countGrade5">0 histórias</span>
+              <span class="grade-cta">Entrar no 5.º Ano →</span>
+            </div>
+          </div>
+        </button>
+
+        <button type="button" class="grade-card grade-card-6" data-enter-grade="6">
+          <div class="grade-card-banner theme-indigo">
+            <span class="grade-chip">2.º Ciclo</span>
+            <span class="grade-big-icon" aria-hidden="true">🚀</span>
+          </div>
+          <div class="grade-card-body">
+            <h3>Biblioteca Sonora · 6.º Ano</h3>
+            <p>Novas narrativas, desafios de escuta e histórias pensadas para os alunos do 6.º ano.</p>
+            <div class="grade-card-footer">
+              <span class="grade-count-pill" id="countGrade6">0 histórias</span>
+              <span class="grade-cta">Entrar no 6.º Ano →</span>
+            </div>
+          </div>
+        </button>
       </div>
     </section>
 
-    <!-- Story Cards Grid -->
-    <main class="main-content">
-      <div id="storiesGrid" class="stories-grid" aria-live="polite">
-        <!-- Story cards rendered by JS -->
-      </div>
+    <!-- Library View (5.º Ano or 6.º Ano) -->
+    <div id="libraryView" class="hidden">
+      <!-- Filters & Search -->
+      <section class="controls-bar" aria-label="Filtrar histórias">
+        <div class="category-pills" id="categoryPills" role="tablist">
+          <!-- Populated by JS -->
+        </div>
+        <div class="search-wrap">
+          <span class="search-icon" aria-hidden="true">🔍</span>
+          <input
+            type="search"
+            id="searchInput"
+            placeholder="Procurar história ou tema..."
+            aria-label="Procurar história ou tema"
+            autocomplete="off"
+          />
+        </div>
+      </section>
 
-      <div id="emptyState" class="empty-state hidden">
-        <div class="empty-emoji" aria-hidden="true">🎧</div>
-        <h2>Ainda não há histórias nesta categoria</h2>
-        <p>Tenta escolher outro tema ou pede ao professor para adicionar uma nova história.</p>
-        <button type="button" class="btn btn-primary" id="btnResetFilters">Ver todas as histórias</button>
-      </div>
-    </main>
+      <!-- Story Cards Grid -->
+      <main class="main-content">
+        <div id="storiesGrid" class="stories-grid" aria-live="polite">
+          <!-- Story cards rendered by JS -->
+        </div>
+
+        <div id="emptyState" class="empty-state hidden">
+          <div class="empty-emoji" aria-hidden="true">🎧</div>
+          <h2 id="emptyStateTitle">Ainda não há histórias nesta categoria</h2>
+          <p id="emptyStateDesc">Tenta escolher outro tema ou pede ao professor para adicionar uma nova história.</p>
+          <button type="button" class="btn btn-primary" id="btnResetFilters">Ver todas as histórias</button>
+        </div>
+      </main>
+    </div>
 
     <!-- Subtle Footer -->
     <footer class="app-footer">
-      <p>Criado para a turma do 5.º ano · Sem anúncios · Feito para ouvir com calma 🎧</p>
+      <p>Biblioteca Sonora · 5.º e 6.º Ano · Sem anúncios · Feito para ouvir com calma 🎧</p>
     </footer>
   </div>
 
@@ -252,9 +303,17 @@
 
           <div class="form-row-3">
             <label class="field">
+              <span>Biblioteca (Ano) *</span>
+              <select id="inputGrade">
+                <option value="5">5.º Ano</option>
+                <option value="6">6.º Ano</option>
+              </select>
+            </label>
+            <label class="field">
               <span>Categoria *</span>
               <select id="inputCategory">
                 <option value="Inspiração">Inspiração</option>
+                <option value="História">História</option>
                 <option value="Aventura">Aventura</option>
                 <option value="Lendas">Lendas</option>
                 <option value="Mistério">Mistério</option>
@@ -267,6 +326,9 @@
               <span>Duração estimada</span>
               <input type="text" id="inputDuration" placeholder="Ex.: 4 min" />
             </label>
+          </div>
+
+          <div class="form-row-2">
             <label class="field">
               <span>Ícone da capa</span>
               <select id="inputIcon">
@@ -284,17 +346,16 @@
                 <option value="📖">📖 Livro</option>
               </select>
             </label>
-          </div>
-
-          <div class="field">
-            <span>Cor da capa</span>
-            <div class="theme-picker" id="themePicker">
-              <button type="button" class="theme-swatch theme-emerald active" data-theme="emerald" aria-label="Verde Esmeralda"></button>
-              <button type="button" class="theme-swatch theme-indigo" data-theme="indigo" aria-label="Azul Índigo"></button>
-              <button type="button" class="theme-swatch theme-ocean" data-theme="ocean" aria-label="Azul Oceano"></button>
-              <button type="button" class="theme-swatch theme-plum" data-theme="plum" aria-label="Ameixa"></button>
-              <button type="button" class="theme-swatch theme-terracotta" data-theme="terracotta" aria-label="Terracota"></button>
-              <button type="button" class="theme-swatch theme-amber" data-theme="amber" aria-label="Âmbar"></button>
+            <div class="field">
+              <span>Cor da capa</span>
+              <div class="theme-picker" id="themePicker">
+                <button type="button" class="theme-swatch theme-emerald active" data-theme="emerald" aria-label="Verde Esmeralda"></button>
+                <button type="button" class="theme-swatch theme-indigo" data-theme="indigo" aria-label="Azul Índigo"></button>
+                <button type="button" class="theme-swatch theme-ocean" data-theme="ocean" aria-label="Azul Oceano"></button>
+                <button type="button" class="theme-swatch theme-plum" data-theme="plum" aria-label="Ameixa"></button>
+                <button type="button" class="theme-swatch theme-terracotta" data-theme="terracotta" aria-label="Terracota"></button>
+                <button type="button" class="theme-swatch theme-amber" data-theme="amber" aria-label="Âmbar"></button>
+              </div>
             </div>
           </div>
 
