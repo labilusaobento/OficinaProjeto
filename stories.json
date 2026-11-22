@@ -1,9 +1,27 @@
 {
-  "classTitle": "Biblioteca Sonora · 5.º Ano",
-  "classSubtitle": "Escolhe uma história, põe os auscultadores e deixa a imaginação viajar.",
+  "classTitle": "OP 2.º Ciclo · Biblioteca",
+  "classSubtitle": "Escolhe o teu ano, põe os auscultadores e deixa a imaginação viajar.",
   "stories": [
     {
+      "id": "correr-22-azul",
+      "grade": "6",
+      "title": "Correr 22 Azul",
+      "narrator": "OP 2.º Ciclo · 6.º Ano",
+      "category": "História",
+      "duration": "3 min",
+      "coverTheme": "indigo",
+      "icon": "📖",
+      "description": "A história marcante de Azul durante a Segunda Guerra Mundial — uma narrativa sobre coragem, amizade e sobrevivência.",
+      "audioType": "dual",
+      "audioUrl": "",
+      "createdAt": "2026-11-21",
+      "text": "Havia uma menina chamada Azul, que tinha caracóis morenos, olhos verdes e um belo sorriso, que no entanto rapidamente ia morrer. Esta história já não é um belo arco-íris e não provoca sorrisos. Esta história é sobre a vida da Azul durante a Segunda Guerra Mundial.\n\nEra o dia 14 de dezembro de 1940 e a Azul tinha 16 anos. Eram 8:30 da manhã e a Azul estava a encher a boca de panquecas enquanto a mãe estava a fazê-las. Depois, vestiu o uniforme da escola e colou a estrela na camisola cinzenta. O pai bebia o seu café e lia as notícias. Era a última vez que tudo ia estar normal, porque algumas horas mais tarde a Azul iria correr pela vida, literalmente.\n\nEram 11:53 quando a história da Azul mudou para pior. Estava na aula de matemática a contar os segundos até à hora de almoço, mas nunca chegou a comê-lo. Aconteceu tudo muito rapidamente. As tropas entraram e, em primeiro Carolina e depois António, toda a gente ficou em pânico.\n\nFoi então que a Azul viu uma coisa extraordinária: uma janela aberta. Antes de pensar, a Azul saltou para fora da janela e correu. Correu pela vida dela e pela vida que queria manter. A Azul tinha noção de que, se calhar, nunca mais veria os pais ou os amigos, e tinha muita noção de que havia grande probabilidade de ser encontrada e morta. Mas não queria morrer num campo de concentração e queria pelo menos tentar sobreviver.\n\nA Azul correu até não sentir as pernas e os olhos estavam molhados com as lágrimas que nasciam dos pensamentos de que ia ser descoberta. Parou numa floresta escura e assustadora, deitou-se numa pedra e adormeceu.\n\nAcordou no dia 18 de dezembro com o som de um choro, mas não era ela quem chorava. O som vinha de um arbusto. Sentia-se suja e cansada e tinha medo do que estaria dentro do arbusto. Mas olhou e viu uma menina.\n\n— Quem és tu? — perguntou a Azul.\n\n— Sou a Ana. Tenho 12 anos e escapei de um campo de concentração. Estou com muito medo.\n\n— Temos as duas — suspirou a Azul.\n\nE destes dois minutos nasceu uma amizade que iria prolongar-se para o resto da vida delas — o que restou. E rapidamente a Azul e a Ana se tornaram companheiras. Elas corriam de um lado para o outro a fugir dos nazis. Sempre que viam suásticas tatuadas em homens e mulheres, questionavam-se sobre quem podia ser tão cruel.\n\nNo dia 8 de agosto de 1942, a Ana foi apanhada e morta. A Azul escapou antes de os nazis conseguirem apanhá-la. O seu coração estava esmagado como vidro partido. A melhor amiga tinha morrido em frente aos seus olhos.\n\nA Azul escondeu-se na casa de uma família em 1943, desde que a Ana tinha morrido. Tinha roupa podre e não tomava banho há meses. Ela tinha chegado aos 19 anos e estava certa de que 90% da família e amigos estavam mortos. Estava deprimida, mas queria lutar pela vida que escrevia num diário que já tinha antes de o mundo ficar tão cruel com a guerra.\n\nCerto dia, de repente, ouviu um som que lhe fez o sangue ficar frio. Sabia tão bem o que aí viria: uma pistola e gritos. Hoje não havia janela. E em cinco minutos, um homem com uma suástica no uniforme apareceu e gritou \"Judeu nojento!\" em alemão. E, desta vez, não ouviu a pistola.",
+      "audioFemaleUrl": "./audio/correr-22-azul-female.mp3",
+      "audioMaleUrl": "./audio/correr-22-azul-male.mp3"
+    },
+    {
       "id": "o-falcao-que-nao-voava",
+      "grade": "5",
       "title": "O Falcão que Não Voava",
       "narrator": "Diretor de Turma · 5.º Ano",
       "category": "Inspiração",
@@ -20,6 +38,7 @@
     },
     {
       "id": "o-bom-grande",
+      "grade": "5",
       "title": "O Bom Grande",
       "narrator": "Diretor de Turma · 5.º Ano",
       "category": "Inspiração",
@@ -36,6 +55,7 @@
     },
     {
       "id": "lenda-serra-estrela",
+      "grade": "5",
       "title": "A Lenda da Serra da Estrela",
       "narrator": "Professor · Exemplo em Leitura Automática",
       "category": "Lendas",
@@ -52,6 +72,7 @@
     },
     {
       "id": "segredo-biblioteca-fechada",
+      "grade": "5",
       "title": "O Segredo da Biblioteca Fechada",
       "narrator": "Professor · Exemplo em Leitura Automática",
       "category": "Mistério",
@@ -68,6 +89,7 @@
     },
     {
       "id": "viagem-fundo-atlantico",
+      "grade": "5",
       "title": "Viagem ao Fundo do Atlântico",
       "narrator": "Professor · Exemplo em Leitura Automática",
       "category": "Aventura",
@@ -84,6 +106,7 @@
     },
     {
       "id": "cinco-minutos-calma",
+      "grade": "5",
       "title": "A Floresta do Vento Calmo",
       "narrator": "Professor · Exemplo em Leitura Automática",
       "category": "Calma",

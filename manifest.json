@@ -1,7 +1,7 @@
 {
-  "name": "Biblioteca Sonora · 5.º Ano",
-  "short_name": "Histórias 5.º",
-  "description": "Aplicação de histórias em áudio para alunos do 5.º ano, com modo Ler e Ouvir e gestão simples para o professor.",
+  "name": "OP 2.º Ciclo · Biblioteca",
+  "short_name": "OP 2.º Ciclo",
+  "description": "Aplicação de histórias em áudio para alunos do 5.º e 6.º ano, com modo Ler e Ouvir, vozes naturais em Português de Portugal e gestão simples para o professor.",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#FAF7F2",

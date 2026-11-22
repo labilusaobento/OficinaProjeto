@@ -9,7 +9,7 @@ Aplicação web (PWA) pensada para uma turma de 5.º ano ouvir histórias em áu
   - *A Lenda da Serra da Estrela*, *O Segredo da Biblioteca Fechada*, *Viagem ao Fundo do Atlântico* e *A Floresta do Vento Calmo*
 - **Leitor inclusivo:** alternar entre voz feminina e masculina, velocidade ajustável (`0.75x`, `1x`, `1.25x`, `1.5x`), recuo/avanço de 10 segundos e som ambiente opcional.
 - **Modo *Ler e Ouvir*:** texto de apoio opcional com **Leitura Fácil** (alta legibilidade para dislexia) e ajuste de tamanho de letra.
-- **Modo Professor (PIN predefinido: `5000`):** adicionar histórias, gravar com o microfone, carregar ficheiros MP3/WAV e exportar `stories.json`.
+- **Modo Professor (protegido por PIN):** adicionar histórias, gravar com o microfone, carregar ficheiros MP3/WAV e exportar `stories.json`.
 
 ---
 
